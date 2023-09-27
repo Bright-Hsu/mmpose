@@ -6,6 +6,7 @@ from mmcv.image import imread
 from mmpose.apis import inference_topdown, init_model
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples
+import time
 
 
 def parse_args():
@@ -81,8 +82,12 @@ def main():
     visualizer.set_dataset_meta(
         model.dataset_meta, skeleton_style=args.skeleton_style)
 
+    time1 = time.time()
     # inference a single image
     batch_results = inference_topdown(model, args.img)
+    time2 = time.time()
+    print("inference time: ", time2 - time1)
+
     results = merge_data_samples(batch_results)
 
     # show the results

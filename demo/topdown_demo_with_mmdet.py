@@ -196,6 +196,7 @@ def main():
     # then pass to the model in init_pose_estimator
     visualizer.set_dataset_meta(
         pose_estimator.dataset_meta, skeleton_style=args.skeleton_style)
+    total_cost = 0.0
 
     if args.input == 'webcam':
         input_type = 'webcam'
@@ -233,10 +234,13 @@ def main():
             if not success:
                 break
 
+            time1 = time.time()
             # topdown pose estimation
             pred_instances = process_one_image(args, frame, detector,
                                                pose_estimator, visualizer,
                                                0.001)
+            time2 = time.time()
+            total_cost += time2 - time1
 
             if args.save_predictions:
                 # save prediction results
@@ -276,6 +280,8 @@ def main():
         args.save_predictions = False
         raise ValueError(
             f'file {os.path.basename(args.input)} has invalid format.')
+    
+    print(f'Total time cost: {total_cost}s')
 
     if args.save_predictions:
         with open(args.pred_save_path, 'w') as f:
