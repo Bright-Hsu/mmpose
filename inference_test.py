@@ -153,7 +153,7 @@ class Configurator(object):
         self.pre_file_size = 0
 
         # load model
-        self.model_path = './casva_model.pth'
+        self.model_path = './android-trans/agents_model/casva_model.pth'
         self.agent = Actor(state_dim = self.s_dim, action_dim = self.a_dim)
         self.agent.load_state_dict(torch.load(self.model_path))
 
@@ -203,10 +203,11 @@ class Configurator(object):
         server.bind(configAddress)
         server.listen(5)
         print(f"[*]configServer Listening:  {configAddress}")
-        sock, addr = server.accept()
-        self.configSocket = sock
-        self.configCleintAddress = addr
-        print('configCleintAddress:' + str(self.configCleintAddress))
+        while True:
+            sock, addr = server.accept()
+            self.configSocket = sock
+            self.configCleintAddress = addr
+            print('configCleintAddress:' + str(self.configCleintAddress))
 
     def videoProcess(self, sock, addr):
         # 初始化视频文件
@@ -247,7 +248,7 @@ class Configurator(object):
         print(ffmpeg_cmd)
         os.system(ffmpeg_cmd)
         newVideoPath = videoPath[:-5] + ".mp4"
-        mmposeThread = threading.Thread(target=self.mmposeInfer, args=(newVideoPath))
+        mmposeThread = threading.Thread(target=self.mmposeInfer, args=(newVideoPath,))
         mmposeThread.start()
 
         # 4- update state
@@ -266,7 +267,7 @@ class Configurator(object):
 
         # 5- send action
         if self.configSocket is not None:
-            self.configSocket.sendall(struct.pack('i', action))
+            self.configSocket.sendall(struct.pack('>i', action))
 
 
     def main(self):
