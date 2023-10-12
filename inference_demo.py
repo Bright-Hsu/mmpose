@@ -161,7 +161,7 @@ def config(bandwidth, buffer_size, trans_time, video_chunk_size, action, content
     print("state: ", state)
     
     # 2- load model
-    model_path = './casva_model.pth'
+    model_path = './android-trans/agents_model/casva_model.pth'
     agent = Actor(state_dim=s_dim, action_dim=a_dim)
     agent.load_state_dict(torch.load(model_path))
     
